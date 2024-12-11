@@ -125,3 +125,19 @@ func (fe *frontendServer) getAd(ctx context.Context, ctxKeys []string) ([]*pb.Ad
 	})
 	return resp.GetAds(), errors.Wrap(err, "failed to get ads")
 }
+
+
+func (fe *frontendServer) getLikes(ctx context.Context, productID string) (int32, error) {
+	if fe.likeserviceConn == nil {
+		return 0, nil // Likeservice not configured, gracefully fallback
+	}
+
+	client := pb.NewLikesServiceClient(fe.likeserviceConn) // Generated gRPC client
+	req := &pb.GetLikesRequest{ProductId: productID}        // Replace with your actual proto message
+	resp, err := client.GetLikes(ctx, req)
+	if err != nil {
+		return 0, errors.Wrapf(err, "failed to fetch likes for product ID: %s", productID)
+	}
+
+	return resp.LikesCount, nil // Return the likes count from the response
+}

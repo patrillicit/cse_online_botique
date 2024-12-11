@@ -52,6 +52,10 @@
             <div>
               <div class="hot-product-card-name">{{ .Item.Name }}</div>
               <div class="hot-product-card-price">{{ renderMoney .Price }}</div>
+              <div class="hot-product-card-likes">
+                <!-- Display the likes count -->
+                <span>Likes: {{ .Likes }}</span>
+              </div>
             </div>
           </div>
           {{ end }}

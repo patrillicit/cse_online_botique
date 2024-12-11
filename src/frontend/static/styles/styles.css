@@ -349,6 +349,11 @@ main {
   font-size: 14px;
 }
 
+.hot-product-card-likes {
+  font-size: 14px;
+}
+
+
 .hot-product-card > a:first-child {
   position: relative;
   display: block;
@@ -423,6 +428,11 @@ similar to that of the hot-products-row.
 .h-product .product-price {
   font-size: 28px;
 }
+
+.h-product .product-likes {
+  font-size: 28px;
+}
+
 
 .h-product .product-info .product-wrapper {
   margin-left: 15px;

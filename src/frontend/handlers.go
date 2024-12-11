@@ -78,6 +78,7 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 	type productView struct {
 		Item  *pb.Product
 		Price *pb.Money
+		Likes int32 // Likes count
 	}
 	ps := make([]productView, len(products))
 	for i, p := range products {
@@ -86,7 +87,16 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 			renderHTTPError(log, r, w, errors.Wrapf(err, "failed to do currency conversion for product %s", p.GetId()), http.StatusInternalServerError)
 			return
 		}
-		ps[i] = productView{p, price}
+
+		// Fetch likes count for the product
+		likes, err := fe.getLikes(r.Context(), p.GetId())
+		if err != nil {
+			log.WithField("error", err).Warnf("Failed to fetch likes for product %s", p.GetId())
+			likes = 0 // Fallback to 0 likes if the call fails
+		}
+		
+
+		ps[i] = productView{p, price, likes}
 	}
 
 	// Set ENV_PLATFORM (default to local if not set; use env var if set; otherwise detect GCP, which overrides env)_
@@ -180,10 +190,18 @@ func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request)
 		log.WithField("error", err).Warn("failed to get product recommendations")
 	}
 
+	// Fetch likes for the product
+	likes, err := fe.getLikes(r.Context(), id)
+	if err != nil {
+		log.WithField("error", err).Warnf("Failed to fetch likes for product %s", id)
+		likes = 0 // Fallback to 0 likes on error
+	}
+
 	product := struct {
 		Item  *pb.Product
 		Price *pb.Money
-	}{p, price}
+		Likes int32
+	}{p, price, likes}
 
 	// Fetch packaging info (weight/dimensions) of the product
 	// The packaging service is an optional microservice you can run as part of a Google Cloud demo.

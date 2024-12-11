@@ -33,6 +33,10 @@
 
           <h2>{{ $.product.Item.Name }}</h2>
           <p class="product-price">{{ renderMoney $.product.Price }}</p>
+
+          <!-- Display the likes count -->
+          <p class="product-likes">Likes: {{ $.product.Likes }}</p>
+
           <p>{{ $.product.Item.Description }}</p>
 
           {{ if $.packagingInfo }}

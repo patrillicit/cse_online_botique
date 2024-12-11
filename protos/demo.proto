@@ -260,3 +260,27 @@ message Ad {
     // short advertisement text to display.
     string text = 2;
 }
+
+
+// -------------Like Service-----------------
+
+service LikesService {
+    rpc GetLikes(GetLikesRequest) returns (GetLikesResponse) {}
+    rpc AddLike(AddLikeRequest) returns (AddLikeResponse) {}
+}
+
+message GetLikesRequest {
+    string product_id = 1;
+}
+
+message GetLikesResponse {
+    int32 likes_count = 1;
+}
+
+message AddLikeRequest {
+    string product_id = 1;
+}
+
+message AddLikeResponse {
+    bool success = 1;
+}
