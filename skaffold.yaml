@@ -28,6 +28,8 @@ build:
     context: src/productcatalogservice
   - image: recommendationservice
     context: src/recommendationservice
+  - image: likeservice
+    context: src/likeservice
   - image: shoppingassistantservice
     context: src/shoppingassistantservice
   - image: shippingservice
@@ -40,6 +42,8 @@ build:
     context: src/currencyservice
   - image: cartservice
     context: src/cartservice/src
+
+
     docker:
       dockerfile: Dockerfile
   - image: frontend
