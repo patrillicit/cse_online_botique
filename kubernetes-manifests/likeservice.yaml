@@ -16,20 +16,26 @@ spec:
     spec:
       containers:
       - name: server
-        image: likeservice # Replace with your registry image
+        image: likeservice  # Replace with your registry image
         ports:
         - containerPort: 8080
         env:
         - name: PORT
           value: "8080"
-        readinessProbe:
-          periodSeconds: 5
-          grpc:
-            port: 8080
-        livenessProbe:
-          periodSeconds: 5
-          grpc:
-            port: 8080
+#        readinessProbe:
+#          grpc:
+#            port: 8080
+#          periodSeconds: 5
+#          initialDelaySeconds: 5
+#          timeoutSeconds: 2
+#          failureThreshold: 3
+#        livenessProbe:
+#          grpc:
+#            port: 8080
+#          periodSeconds: 5
+#          initialDelaySeconds: 5
+#          timeoutSeconds: 2
+#          failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service
