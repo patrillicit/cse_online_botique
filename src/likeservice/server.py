@@ -6,6 +6,7 @@ import likeservice_pb2_grpc
 
 # In-memory data store for likes
 likes_data = {}
+session_likes = {}
 
 class LikesService(likeservice_pb2_grpc.LikesServiceServicer):
     def GetLikes(self, request, context):
@@ -15,11 +16,33 @@ class LikesService(likeservice_pb2_grpc.LikesServiceServicer):
 
     def AddLike(self, request, context):
         product_id = request.product_id
+        session_id = request.session_id  # Pass session_id in the request
+
+        if session_id in session_likes and product_id in session_likes[session_id]:
+            return likeservice_pb2.AddLikeResponse(success=False, message="Already liked")
+
         if product_id in likes_data:
             likes_data[product_id] += 1
         else:
             likes_data[product_id] = 1
+
+        # Track the like for the session
+        if session_id not in session_likes:
+            session_likes[session_id] = set()
+        session_likes[session_id].add(product_id)
+
         return likeservice_pb2.AddLikeResponse(success=True)
+    
+    def HasLiked(self, request, context):
+        product_id = request.product_id
+        session_id = request.session_id
+
+        # Check if the session has liked the product
+        if session_id in session_likes and product_id in session_likes[session_id]:
+            return likeservice_pb2.HasLikedResponse(liked=True)
+        return likeservice_pb2.HasLikedResponse(liked=False)
+
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

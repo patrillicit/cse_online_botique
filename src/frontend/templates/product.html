@@ -34,8 +34,18 @@
           <h2>{{ $.product.Item.Name }}</h2>
           <p class="product-price">{{ renderMoney $.product.Price }}</p>
 
-          <!-- Display the likes count -->
+          <!-- Likes Count -->
           <p class="product-likes">Likes: {{ $.product.Likes }}</p>
+
+          <!-- Like Button -->
+          {{ if $.liked }}
+            <button class="cymbal-button-primary" disabled>Liked</button>
+          {{ else }}
+            <form method="POST" action="{{ $.baseUrl }}/product/{{ $.product.Item.Id }}/like" style="display: inline;">
+              <button type="submit" class="cymbal-button-primary">Like</button>
+            </form>
+          {{ end }}
+
 
           <p>{{ $.product.Item.Description }}</p>
 

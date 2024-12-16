@@ -5,6 +5,16 @@ package likeservice;
 service LikesService {
   rpc GetLikes (GetLikesRequest) returns (GetLikesResponse);
   rpc AddLike (AddLikeRequest) returns (AddLikeResponse);
+  rpc HasLiked (HasLikedRequest) returns (HasLikedResponse);
+}
+
+message HasLikedRequest {
+  string product_id = 1;
+  string session_id = 2;
+}
+
+message HasLikedResponse {
+  bool liked = 1;
 }
 
 message GetLikesRequest {
@@ -17,6 +27,7 @@ message GetLikesResponse {
 
 message AddLikeRequest {
   string product_id = 1;
+  string session_id = 2;
 }
 
 message AddLikeResponse {

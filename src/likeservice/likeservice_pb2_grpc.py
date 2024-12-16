@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import likeservice_pb2 as likeservice__pb2
+from protos import likeservice_pb2 as protos_dot_likeservice__pb2
 
 GRPC_GENERATED_VERSION = '1.68.1'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in likeservice_pb2_grpc.py depends on'
+        + f' but the generated code in protos/likeservice_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,13 +36,18 @@ class LikesServiceStub(object):
         """
         self.GetLikes = channel.unary_unary(
                 '/likeservice.LikesService/GetLikes',
-                request_serializer=likeservice__pb2.GetLikesRequest.SerializeToString,
-                response_deserializer=likeservice__pb2.GetLikesResponse.FromString,
+                request_serializer=protos_dot_likeservice__pb2.GetLikesRequest.SerializeToString,
+                response_deserializer=protos_dot_likeservice__pb2.GetLikesResponse.FromString,
                 _registered_method=True)
         self.AddLike = channel.unary_unary(
                 '/likeservice.LikesService/AddLike',
-                request_serializer=likeservice__pb2.AddLikeRequest.SerializeToString,
-                response_deserializer=likeservice__pb2.AddLikeResponse.FromString,
+                request_serializer=protos_dot_likeservice__pb2.AddLikeRequest.SerializeToString,
+                response_deserializer=protos_dot_likeservice__pb2.AddLikeResponse.FromString,
+                _registered_method=True)
+        self.HasLiked = channel.unary_unary(
+                '/likeservice.LikesService/HasLiked',
+                request_serializer=protos_dot_likeservice__pb2.HasLikedRequest.SerializeToString,
+                response_deserializer=protos_dot_likeservice__pb2.HasLikedResponse.FromString,
                 _registered_method=True)
 
 
@@ -61,18 +66,29 @@ class LikesServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def HasLiked(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_LikesServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetLikes': grpc.unary_unary_rpc_method_handler(
                     servicer.GetLikes,
-                    request_deserializer=likeservice__pb2.GetLikesRequest.FromString,
-                    response_serializer=likeservice__pb2.GetLikesResponse.SerializeToString,
+                    request_deserializer=protos_dot_likeservice__pb2.GetLikesRequest.FromString,
+                    response_serializer=protos_dot_likeservice__pb2.GetLikesResponse.SerializeToString,
             ),
             'AddLike': grpc.unary_unary_rpc_method_handler(
                     servicer.AddLike,
-                    request_deserializer=likeservice__pb2.AddLikeRequest.FromString,
-                    response_serializer=likeservice__pb2.AddLikeResponse.SerializeToString,
+                    request_deserializer=protos_dot_likeservice__pb2.AddLikeRequest.FromString,
+                    response_serializer=protos_dot_likeservice__pb2.AddLikeResponse.SerializeToString,
+            ),
+            'HasLiked': grpc.unary_unary_rpc_method_handler(
+                    servicer.HasLiked,
+                    request_deserializer=protos_dot_likeservice__pb2.HasLikedRequest.FromString,
+                    response_serializer=protos_dot_likeservice__pb2.HasLikedResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -100,8 +116,8 @@ class LikesService(object):
             request,
             target,
             '/likeservice.LikesService/GetLikes',
-            likeservice__pb2.GetLikesRequest.SerializeToString,
-            likeservice__pb2.GetLikesResponse.FromString,
+            protos_dot_likeservice__pb2.GetLikesRequest.SerializeToString,
+            protos_dot_likeservice__pb2.GetLikesResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -127,8 +143,35 @@ class LikesService(object):
             request,
             target,
             '/likeservice.LikesService/AddLike',
-            likeservice__pb2.AddLikeRequest.SerializeToString,
-            likeservice__pb2.AddLikeResponse.FromString,
+            protos_dot_likeservice__pb2.AddLikeRequest.SerializeToString,
+            protos_dot_likeservice__pb2.AddLikeResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def HasLiked(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/likeservice.LikesService/HasLiked',
+            protos_dot_likeservice__pb2.HasLikedRequest.SerializeToString,
+            protos_dot_likeservice__pb2.HasLikedResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -194,8 +194,22 @@ func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request)
 	likes, err := fe.getLikes(r.Context(), id)
 	if err != nil {
 		log.WithField("error", err).Warnf("Failed to fetch likes for product %s", id)
-		likes = 0 // Fallback to 0 likes on error
+		likes = 0 // Ensure fallback
 	}
+
+	liked := false
+    sessionID := sessionID(r)
+    if sessionID != "" {
+        likedResp, err := fe.likeserviceClient.HasLiked(r.Context(), &likespb.HasLikedRequest{
+            ProductId: id,
+            SessionId: sessionID,
+        })
+        if err != nil {
+            log.WithField("error", err).Warn("Failed to check if product is liked")
+        } else {
+            liked = likedResp.Liked
+        }
+    }
 
 	product := struct {
 		Item  *pb.Product
@@ -221,6 +235,7 @@ func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request)
 		"recommendations": recommendations,
 		"cart_size":       cartSize(cart),
 		"packagingInfo":   packagingInfo,
+		"liked":           liked,
 	})); err != nil {
 		log.Println(err)
 	}
@@ -539,6 +554,42 @@ func (fe *frontendServer) setCurrencyHandler(w http.ResponseWriter, r *http.Requ
 	w.Header().Set("Location", referer)
 	w.WriteHeader(http.StatusFound)
 }
+
+// Handles adding a like to a product.  
+func (fe *frontendServer) addLikeHandler(w http.ResponseWriter, r *http.Request) {
+    log := r.Context().Value(ctxKeyLog{}).(logrus.FieldLogger)
+
+    // Extract session ID
+    sessionID := sessionID(r)
+    if sessionID == "" {
+        log.Error("Session ID not found")
+        http.Error(w, "Session not found", http.StatusBadRequest)
+        return
+    }
+
+    // Extract product ID from URL
+    productID := mux.Vars(r)["id"]
+    if productID == "" {
+        log.Error("Product ID not provided")
+        http.Error(w, "Product ID not provided", http.StatusBadRequest)
+        return
+    }
+
+    // Call LikesService AddLike gRPC with the current session ID
+    _, err := fe.likeserviceClient.AddLike(r.Context(), &likespb.AddLikeRequest{
+        ProductId: productID,
+        SessionId: sessionID, 
+    })
+    if err != nil {
+        log.WithError(err).Error("Failed to add like")
+        http.Error(w, "Failed to add like", http.StatusInternalServerError)
+        return
+    }
+
+	redirectURL := fmt.Sprintf("/product/%s", productID)
+    http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+}
+
 
 // chooseAd queries for advertisements available and randomly chooses one, if
 // available. It ignores the error retrieving the ad since it is not critical.
