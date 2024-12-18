@@ -21,6 +21,6 @@
 # Requires gRPC tools:
 #   pip install -r requirements.txt
 
-python -m grpc_tools.protoc -I../../protos --python_out=. --grpc_python_out=. ../../protos/likes.proto
+python -m grpc_tools.protoc -I../../protos --python_out=. --grpc_python_out=. ../../protos/demo.proto
 
 # [END gke_likeservice_genproto]

@@ -23,6 +23,9 @@ ENV PYTHONUNBUFFERED=1
 # Set the working directory
 WORKDIR /likeservice
 
+# Add PYTHONPATH to include the application directory
+ENV PYTHONPATH=/likeservice
+
 # Grab packages from builder
 COPY --from=builder /usr/local/lib/python3.12/ /usr/local/lib/python3.12/
 
