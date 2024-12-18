@@ -1,8 +1,8 @@
 from concurrent import futures
 import grpc
 from grpc_reflection.v1alpha import reflection
-import likeservice_pb2
-import likeservice_pb2_grpc
+from protos import likeservice_pb2
+from protos import likeservice_pb2_grpc
 
 # In-memory data store for likes
 likes_data = {}

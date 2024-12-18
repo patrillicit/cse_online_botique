@@ -575,6 +575,11 @@ func (fe *frontendServer) addLikeHandler(w http.ResponseWriter, r *http.Request)
         return
     }
 
+	log.WithFields(logrus.Fields{
+        "productID": productID,
+        "sessionID": sessionID,
+    }).Info("Like added successfully")
+
 	redirectURL := fmt.Sprintf("/product/%s", productID)
     http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }
