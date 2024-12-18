@@ -129,15 +129,53 @@ func (fe *frontendServer) getAd(ctx context.Context, ctxKeys []string) ([]*pb.Ad
 
 func (fe *frontendServer) getLikes(ctx context.Context, productID string) (int32, error) {
 	if fe.likeserviceConn == nil {
-		return 0, nil // Likeservice not configured, gracefully fallback
+		return 0, nil // Service not configured; gracefully fallback
 	}
 
-	client := pb.NewLikesServiceClient(fe.likeserviceConn) // Generated gRPC client
-	req := &pb.GetLikesRequest{ProductId: productID}        // Replace with your actual proto message
-	resp, err := client.GetLikes(ctx, req)
+	client := pb.NewLikesServiceClient(fe.likeserviceConn) 
+	req := &pb.GetLikesRequest{ProductId: productID}      
 	if err != nil {
 		return 0, errors.Wrapf(err, "failed to fetch likes for product ID: %s", productID)
 	}
 
-	return resp.LikesCount, nil // Return the likes count from the response
+	return resp.LikesCount, nil // Return the likes count for the given product
+}
+
+
+func (fe *frontendServer) hasLiked(ctx context.Context, productID, sessionID string) (bool, error) {
+    if fe.likeserviceConn == nil {
+        return false, nil // Service not configured; gracefully fallback
+    }
+
+    client := pb.NewLikesServiceClient(fe.likeserviceConn)
+    req := &pb.HasLikedRequest{
+        ProductId: productID,
+        SessionId: sessionID,
+    }
+
+    resp, err := client.HasLiked(ctx, req)
+    if err != nil {
+        return false, errors.Wrapf(err, "failed to check if product ID %s is liked", productID)
+    }
+
+    return resp.Liked, nil // Return the like status for the given product and session
+}
+
+func (fe *frontendServer) addLike(ctx context.Context, productID, sessionID string) error {
+    if fe.likeserviceConn == nil {
+        return errors.New("LikesService is not configured")
+    }
+
+    client := pb.NewLikesServiceClient(fe.likeserviceConn) 
+    req := &pb.AddLikeRequest{
+        ProductId: productID,
+        SessionId: sessionID,
+    }
+
+    _, err := client.AddLike(ctx, req)
+    if err != nil {
+        return errors.Wrapf(err, "failed to add like for product ID %s", productID)
+    }
+
+    return nil // Successfully added like
 }

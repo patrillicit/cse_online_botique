@@ -200,14 +200,9 @@ func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request)
 	liked := false
     sessionID := sessionID(r)
     if sessionID != "" {
-        likedResp, err := fe.likeserviceClient.HasLiked(r.Context(), &likespb.HasLikedRequest{
-            ProductId: id,
-            SessionId: sessionID,
-        })
+        liked, err = fe.hasLiked(r.Context(), productID, sessionID)
         if err != nil {
             log.WithField("error", err).Warn("Failed to check if product is liked")
-        } else {
-            liked = likedResp.Liked
         }
     }
 
@@ -562,7 +557,6 @@ func (fe *frontendServer) addLikeHandler(w http.ResponseWriter, r *http.Request)
     // Extract session ID
     sessionID := sessionID(r)
     if sessionID == "" {
-        log.Error("Session ID not found")
         http.Error(w, "Session not found", http.StatusBadRequest)
         return
     }
@@ -570,18 +564,13 @@ func (fe *frontendServer) addLikeHandler(w http.ResponseWriter, r *http.Request)
     // Extract product ID from URL
     productID := mux.Vars(r)["id"]
     if productID == "" {
-        log.Error("Product ID not provided")
         http.Error(w, "Product ID not provided", http.StatusBadRequest)
         return
     }
 
-    // Call LikesService AddLike gRPC with the current session ID
-    _, err := fe.likeserviceClient.AddLike(r.Context(), &likespb.AddLikeRequest{
-        ProductId: productID,
-        SessionId: sessionID, 
-    })
+    // Add a like
+    err := fe.addLike(r.Context(), productID, sessionID)
     if err != nil {
-        log.WithError(err).Error("Failed to add like")
         http.Error(w, "Failed to add like", http.StatusInternalServerError)
         return
     }
