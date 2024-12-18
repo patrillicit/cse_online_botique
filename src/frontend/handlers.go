@@ -200,7 +200,7 @@ func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request)
 	liked := false
     sessionID := sessionID(r)
     if sessionID != "" {
-        liked, err = fe.hasLiked(r.Context(), productID, sessionID)
+        liked, err = fe.hasLiked(r.Context(), id, sessionID)
         if err != nil {
             log.WithField("error", err).Warn("Failed to check if product is liked")
         }

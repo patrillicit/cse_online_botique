@@ -133,7 +133,8 @@ func (fe *frontendServer) getLikes(ctx context.Context, productID string) (int32
 	}
 
 	client := pb.NewLikesServiceClient(fe.likeserviceConn) 
-	req := &pb.GetLikesRequest{ProductId: productID}      
+	req := &pb.GetLikesRequest{ProductId: productID}
+	resp, err := client.GetLikes(ctx, req)     
 	if err != nil {
 		return 0, errors.Wrapf(err, "failed to fetch likes for product ID: %s", productID)
 	}
