@@ -1181,6 +1181,7 @@ var AdService_ServiceDesc = grpc.ServiceDesc{
 const (
 	LikesService_GetLikes_FullMethodName = "/hipstershop.LikesService/GetLikes"
 	LikesService_AddLike_FullMethodName  = "/hipstershop.LikesService/AddLike"
+	LikesService_HasLiked_FullMethodName = "/hipstershop.LikesService/HasLiked"
 )
 
 // LikesServiceClient is the client API for LikesService service.
@@ -1189,6 +1190,7 @@ const (
 type LikesServiceClient interface {
 	GetLikes(ctx context.Context, in *GetLikesRequest, opts ...grpc.CallOption) (*GetLikesResponse, error)
 	AddLike(ctx context.Context, in *AddLikeRequest, opts ...grpc.CallOption) (*AddLikeResponse, error)
+	HasLiked(ctx context.Context, in *HasLikedRequest, opts ...grpc.CallOption) (*HasLikedResponse, error)
 }
 
 type likesServiceClient struct {
@@ -1219,12 +1221,23 @@ func (c *likesServiceClient) AddLike(ctx context.Context, in *AddLikeRequest, op
 	return out, nil
 }
 
+func (c *likesServiceClient) HasLiked(ctx context.Context, in *HasLikedRequest, opts ...grpc.CallOption) (*HasLikedResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HasLikedResponse)
+	err := c.cc.Invoke(ctx, LikesService_HasLiked_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LikesServiceServer is the server API for LikesService service.
 // All implementations must embed UnimplementedLikesServiceServer
 // for forward compatibility.
 type LikesServiceServer interface {
 	GetLikes(context.Context, *GetLikesRequest) (*GetLikesResponse, error)
 	AddLike(context.Context, *AddLikeRequest) (*AddLikeResponse, error)
+	HasLiked(context.Context, *HasLikedRequest) (*HasLikedResponse, error)
 	mustEmbedUnimplementedLikesServiceServer()
 }
 
@@ -1240,6 +1253,9 @@ func (UnimplementedLikesServiceServer) GetLikes(context.Context, *GetLikesReques
 }
 func (UnimplementedLikesServiceServer) AddLike(context.Context, *AddLikeRequest) (*AddLikeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddLike not implemented")
+}
+func (UnimplementedLikesServiceServer) HasLiked(context.Context, *HasLikedRequest) (*HasLikedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HasLiked not implemented")
 }
 func (UnimplementedLikesServiceServer) mustEmbedUnimplementedLikesServiceServer() {}
 func (UnimplementedLikesServiceServer) testEmbeddedByValue()                      {}
@@ -1298,6 +1314,24 @@ func _LikesService_AddLike_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LikesService_HasLiked_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HasLikedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LikesServiceServer).HasLiked(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LikesService_HasLiked_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LikesServiceServer).HasLiked(ctx, req.(*HasLikedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LikesService_ServiceDesc is the grpc.ServiceDesc for LikesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1312,6 +1346,10 @@ var LikesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddLike",
 			Handler:    _LikesService_AddLike_Handler,
+		},
+		{
+			MethodName: "HasLiked",
+			Handler:    _LikesService_HasLiked_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
