@@ -94,7 +94,6 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 			log.WithField("error", err).Warnf("Failed to fetch likes for product %s", p.GetId())
 			likes = 0 // Fallback to 0 likes if the call fails
 		}
-		
 
 		ps[i] = productView{p, price, likes}
 	}
@@ -198,13 +197,13 @@ func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	liked := false
-    sessionID := sessionID(r)
-    if sessionID != "" {
-        liked, err = fe.hasLiked(r.Context(), id, sessionID)
-        if err != nil {
-            log.WithField("error", err).Warn("Failed to check if product is liked")
-        }
-    }
+	sessionID := sessionID(r)
+	if sessionID != "" {
+		liked, err = fe.hasLiked(r.Context(), id, sessionID)
+		if err != nil {
+			log.WithField("error", err).Warn("Failed to check if product is liked")
+		}
+	}
 
 	product := struct {
 		Item  *pb.Product
@@ -260,7 +259,7 @@ func (fe *frontendServer) addToCartHandler(w http.ResponseWriter, r *http.Reques
 		renderHTTPError(log, r, w, errors.Wrap(err, "failed to add to cart"), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("location", baseUrl + "/cart")
+	w.Header().Set("location", baseUrl+"/cart")
 	w.WriteHeader(http.StatusFound)
 }
 
@@ -272,7 +271,7 @@ func (fe *frontendServer) emptyCartHandler(w http.ResponseWriter, r *http.Reques
 		renderHTTPError(log, r, w, errors.Wrap(err, "failed to empty cart"), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("location", baseUrl + "/")
+	w.Header().Set("location", baseUrl+"/")
 	w.WriteHeader(http.StatusFound)
 }
 
@@ -451,7 +450,7 @@ func (fe *frontendServer) logoutHandler(w http.ResponseWriter, r *http.Request) 
 		c.MaxAge = -1
 		http.SetCookie(w, c)
 	}
-	w.Header().Set("Location", baseUrl + "/")
+	w.Header().Set("Location", baseUrl+"/")
 	w.WriteHeader(http.StatusFound)
 }
 
@@ -550,40 +549,73 @@ func (fe *frontendServer) setCurrencyHandler(w http.ResponseWriter, r *http.Requ
 	w.WriteHeader(http.StatusFound)
 }
 
-// Handles adding a like to a product.  
+// Handles adding a like to a product.
 func (fe *frontendServer) addLikeHandler(w http.ResponseWriter, r *http.Request) {
-    log := r.Context().Value(ctxKeyLog{}).(logrus.FieldLogger)
+	log := r.Context().Value(ctxKeyLog{}).(logrus.FieldLogger)
 
-    // Extract session ID
-    sessionID := sessionID(r)
-    if sessionID == "" {
-        http.Error(w, "Session not found", http.StatusBadRequest)
-        return
-    }
+	// Extract session ID
+	sessionID := sessionID(r)
+	if sessionID == "" {
+		http.Error(w, "Session not found", http.StatusBadRequest)
+		return
+	}
 
-    // Extract product ID from URL
-    productID := mux.Vars(r)["id"]
-    if productID == "" {
-        http.Error(w, "Product ID not provided", http.StatusBadRequest)
-        return
-    }
+	// Extract product ID from URL
+	productID := mux.Vars(r)["id"]
+	if productID == "" {
+		http.Error(w, "Product ID not provided", http.StatusBadRequest)
+		return
+	}
 
-    // Add a like
-    err := fe.addLike(r.Context(), productID, sessionID)
-    if err != nil {
-        http.Error(w, "Failed to add like", http.StatusInternalServerError)
-        return
-    }
+	// Add a like
+	err := fe.addLike(r.Context(), productID, sessionID)
+	if err != nil {
+		http.Error(w, "Failed to add like", http.StatusInternalServerError)
+		return
+	}
 
 	log.WithFields(logrus.Fields{
-        "productID": productID,
-        "sessionID": sessionID,
-    }).Info("Like added successfully")
+		"productID": productID,
+		"sessionID": sessionID,
+	}).Info("Like added successfully")
 
 	redirectURL := fmt.Sprintf("/product/%s", productID)
-    http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }
 
+// Handles deleting a like to a product.
+func (fe *frontendServer) deleteLikeHandler(w http.ResponseWriter, r *http.Request) {
+	log := r.Context().Value(ctxKeyLog{}).(logrus.FieldLogger)
+
+	// Extract session ID
+	sessionID := sessionID(r)
+	if sessionID == "" {
+		http.Error(w, "Session not found", http.StatusBadRequest)
+		return
+	}
+
+	// Extract product ID from URL
+	productID := mux.Vars(r)["id"]
+	if productID == "" {
+		http.Error(w, "Product ID not provided", http.StatusBadRequest)
+		return
+	}
+
+	// Delete a like
+	err := fe.deleteLike(r.Context(), productID, sessionID)
+	if err != nil {
+		http.Error(w, "Failed to delete like", http.StatusInternalServerError)
+		return
+	}
+
+	log.WithFields(logrus.Fields{
+		"productID": productID,
+		"sessionID": sessionID,
+	}).Info("Like deleted successfully")
+
+	redirectURL := fmt.Sprintf("/product/%s", productID)
+	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+}
 
 // chooseAd queries for advertisements available and randomly chooses one, if
 // available. It ignores the error retrieving the ad since it is not critical.

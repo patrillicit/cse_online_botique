@@ -1011,6 +1011,11 @@ class LikesServiceStub(object):
                 request_serializer=demo__pb2.HasLikedRequest.SerializeToString,
                 response_deserializer=demo__pb2.HasLikedResponse.FromString,
                 _registered_method=True)
+        self.DeleteLike = channel.unary_unary(
+                '/hipstershop.LikesService/DeleteLike',
+                request_serializer=demo__pb2.DeleteLikeRequest.SerializeToString,
+                response_deserializer=demo__pb2.DeleteLikeResponse.FromString,
+                _registered_method=True)
 
 
 class LikesServiceServicer(object):
@@ -1036,6 +1041,12 @@ class LikesServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def DeleteLike(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_LikesServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -1053,6 +1064,11 @@ def add_LikesServiceServicer_to_server(servicer, server):
                     servicer.HasLiked,
                     request_deserializer=demo__pb2.HasLikedRequest.FromString,
                     response_serializer=demo__pb2.HasLikedResponse.SerializeToString,
+            ),
+            'DeleteLike': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteLike,
+                    request_deserializer=demo__pb2.DeleteLikeRequest.FromString,
+                    response_serializer=demo__pb2.DeleteLikeResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -1138,6 +1154,33 @@ class LikesService(object):
             '/hipstershop.LikesService/HasLiked',
             demo__pb2.HasLikedRequest.SerializeToString,
             demo__pb2.HasLikedResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteLike(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/hipstershop.LikesService/DeleteLike',
+            demo__pb2.DeleteLikeRequest.SerializeToString,
+            demo__pb2.DeleteLikeResponse.FromString,
             options,
             channel_credentials,
             insecure,

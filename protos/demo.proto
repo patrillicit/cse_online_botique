@@ -265,18 +265,19 @@ message Ad {
 // -------------Like Service-----------------
 
 service LikesService {
-    rpc GetLikes(GetLikesRequest) returns (GetLikesResponse) {}
-    rpc AddLike(AddLikeRequest) returns (AddLikeResponse) {}
-  rpc HasLiked (HasLikedRequest) returns (HasLikedResponse);
+    rpc GetLikes (GetLikesRequest) returns (GetLikesResponse);
+    rpc AddLike (AddLikeRequest) returns (AddLikeResponse);
+    rpc HasLiked (HasLikedRequest) returns (HasLikedResponse);
+    rpc DeleteLike (DeleteLikeRequest) returns (DeleteLikeResponse);
 }
 
 message HasLikedRequest {
-  string product_id = 1;
-  string session_id = 2;
+    string product_id = 1;
+    string session_id = 2;
 }
 
 message HasLikedResponse {
-  bool liked = 1;
+    bool liked = 1;
 }
 
 message GetLikesRequest {
@@ -293,5 +294,14 @@ message AddLikeRequest {
 }
 
 message AddLikeResponse {
+    bool success = 1;
+}
+
+message DeleteLikeRequest {
+    string product_id = 1;
+    string session_id = 2;
+}
+
+message DeleteLikeResponse {
     bool success = 1;
 }

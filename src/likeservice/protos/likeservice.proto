@@ -6,6 +6,7 @@ service LikesService {
   rpc GetLikes (GetLikesRequest) returns (GetLikesResponse);
   rpc AddLike (AddLikeRequest) returns (AddLikeResponse);
   rpc HasLiked (HasLikedRequest) returns (HasLikedResponse);
+  rpc DeleteLike (DeleteLikeRequest) returns (DeleteLikeResponse);
 }
 
 message HasLikedRequest {
@@ -31,5 +32,14 @@ message AddLikeRequest {
 }
 
 message AddLikeResponse {
+  bool success = 1;
+}
+
+message DeleteLikeRequest {
+  string product_id = 1;
+  string session_id = 2;
+}
+
+message DeleteLikeResponse {
   bool success = 1;
 }

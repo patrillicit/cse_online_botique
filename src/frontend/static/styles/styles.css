@@ -429,8 +429,9 @@ similar to that of the hot-products-row.
   font-size: 28px;
 }
 
-.h-product .product-likes {
-  font-size: 28px;
+.product-likes {
+  font-size: 22px;
+  margin: 10px 0;
 }
 
 

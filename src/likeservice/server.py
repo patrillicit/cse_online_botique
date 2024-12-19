@@ -33,6 +33,22 @@ class LikesService(demo_pb2_grpc.LikesServiceServicer):
 
         return demo_pb2.AddLikeResponse(success=True)
     
+    def DeleteLike(self, request, context):
+        product_id = request.product_id
+        session_id = request.session_id  
+        
+        if session_id not in session_likes or product_id not in session_likes[session_id]:
+            return demo_pb2.DeleteLikeResponse(success=False, message="Not liked")
+
+        if product_id in likes_data:
+            likes_data[product_id] -= 1
+
+        # Track the like for the session
+        if session_id in session_likes:
+            session_likes[session_id].remove(product_id)
+
+        return demo_pb2.DeleteLikeResponse(success=True)
+    
     def HasLiked(self, request, context):
         product_id = request.product_id
         session_id = request.session_id
